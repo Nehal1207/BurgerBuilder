@@ -2,35 +2,11 @@ import React, { Component } from 'react';
 
 import CheckoutSummary from '../../components/CheckoutSummary/CheckoutSummary';
 import ContactData from '../ContactData/ContactData';
-import { Route } from 'react-router-dom';
-import axios from 'axios';
+import { Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 class Checkout extends Component {
-    state = {
-        ingredients: {
-            salad: 1,
-            meat: 1,
-            cheese: 1,
-            bacon: 1
-        },
-        price: 0
-    }
 
-    componentDidMount() {
-        const query = new URLSearchParams(this.props.location.search);
-        const ingredients = {};
-        let totalPrice = 0;
-        for (let param of query.entries()) {
-            if (param[0] === 'price') {
-                totalPrice = +param[1];
-            }
-            else {
-                ingredients[param[0]] = +param[1];
-            }
-            
-        }
-        this.setState({ ingredients: ingredients, price: totalPrice });
-    }
 
     cancleHandler = () => {
         this.props.history.goBack();
@@ -40,22 +16,36 @@ class Checkout extends Component {
         this.props.history.replace('/checkout/contact-details');
     }
 
-    placeOrder = (event) => {
-        event.preventDefault();
-        axios.post('https://burgerbuilder-7c9d9-default-rtdb.firebaseio.com/orders.json', { ingredients: this.state.ingredients, price: this.state.price })
-            .then(res => { console.log(res) });
-    }
+
 
     render() {
+        console.log('rendering');
+        const redi = this.props.purch ? <Redirect to='/' /> : null;
+        
+        const temp = { salad: 0, bacon: 0, cheese: 0, meat: 0 };
+
+        const summary = (JSON.stringify(this.props.ingr) !== JSON.stringify(temp)) ? (
+            <React.Fragment>
+                {redi}
+                <Route path="/checkout" component={() => <CheckoutSummary ingredients={this.props.ingr} cont={this.continueHandler} canc={this.cancleHandler} />} />
+                <Route path={this.props.match.path + '/contact-details'} component={ContactData} />
+            </React.Fragment>
+        ) : <Redirect to='/' />;
         return (
             <React.Fragment>
-                <Route path="/checkout" component={() => <CheckoutSummary ingredients={this.state.ingredients} cont={this.continueHandler} canc={this.cancleHandler} />} />
-                <Route path={this.props.match.path + '/contact-details'} component={() => <ContactData buy={ this.placeOrder }/>}/>
                 
-                
+                {summary}
             </React.Fragment>
         );
     }
 }
 
-export default Checkout;
+const mapStateToProps = (state) => {
+    return {
+        ingr: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        purch: state.orders.purchased
+    }
+}
+
+export default connect(mapStateToProps)(Checkout);

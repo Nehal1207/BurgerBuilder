@@ -1,35 +1,39 @@
 import React, { Component } from 'react';
 import Order from '../../components/Order/Order';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import * as actions from '../../Store/actions/index';
 
 class Orders extends Component {
-	state = {
-		order: []
-	}
+	
 
-	componentDidMount() {
-		axios.get('https://burgerbuilder-7c9d9-default-rtdb.firebaseio.com/orders.json').then(res => {
-			const orders = []
-			for (let i in res.data) {
-				orders.push(res.data[i]);
-			}
-			console.log(orders);
-			this.setState({ order: orders });
-			//const orderArray = res.data.map(p)
-			//this.setState()
-		})
+	componentWillMount() {
+		this.props.resetAuth();
+		if(this.props.token)this.props.initOrders(this.props.token,this.props.userId);
 	}
 
 	render() {
-		const displayOrders = this.state.order.map(p => {
-			return <Order data={p} />
+		const displayOrders = this.props.ord.map(p => {
+			return <Order key={ p.id } data={p.dat} />
 		})
 		return (
 			<div>
-				{displayOrders}
+				{this.props.token? displayOrders : <h1>No order Found</h1>}
 			</div>
 		);
 	}
 }
 
-export default Orders;
+const mapStateToProps = (state) => {
+	return {
+		ord: state.orders.orders,
+		token: state.auth.token,
+		userId : state.auth.userId
+    }
+}
+const mapDispatchToProps = dispatch => {
+	return {
+		initOrders: (token,id) => dispatch(actions.fetchOrders(token,id)),
+		resetAuth: () => dispatch(actions.authReset())
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);

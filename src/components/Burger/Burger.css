@@ -1,9 +1,15 @@
 .Burger {
-    width: 20%;
-    height: 400px;
+    width: 400px;
+    height: 500px;
     margin: auto;
-   /* overflow: scroll;*/
+    /* overflow: scroll;*/
     text-align: center;
     font-weight: bold;
     font-size: 1.2rem;
+}
+
+@media (max-width : 600px) {
+    .Burger {
+        width: 80%
+    }
 }

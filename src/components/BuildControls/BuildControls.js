@@ -11,13 +11,13 @@ const controls = [
 
 const buildControls = (props) => {
     const allControls = controls.map(el => {
-        return <BuildControl key={el.label} label={el.label} type={el.type} />;
+        return <BuildControl add={props.addIngredient} remove={props.removeIngredient} key={el.label} label={el.label} type={el.type} />;
     })
 
     return (
         <React.Fragment>
             <div className={classes.BuildControls}>
-                <p1>Total Price  : Rs.{props.price}</p1>
+                <h3>Total Price  : Rs.{props.price}</h3>
                 {allControls}
                 <button className={classes.OrderButton} disabled={!props.purchasable} onClick={props.purchase} >ORDER NOW</button>
             </div>

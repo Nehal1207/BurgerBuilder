@@ -3,7 +3,7 @@ import classes from './Order.css';
 
 const order = props => {
     const ingredients = Object.keys(props.data.ingredients).map(igKey => (
-        (<p>{igKey} ({props.data.ingredients[igKey]}) </p>)
+        (<p key={igKey}>{igKey} ({props.data.ingredients[igKey]}) </p>)
         ));
 return (
     <div className={classes.Order} >
