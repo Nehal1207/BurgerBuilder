@@ -9,3 +9,8 @@
 	box-sizing: border-box;
 }
 
+@media (max-width : 500px) {
+	.ContactData {
+		width: 90%
+	}
+}
